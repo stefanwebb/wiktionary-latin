@@ -7,20 +7,6 @@ import (
 	"regexp"
 )
 
-/*type entry struct {
-	XMLName   xml.Name `xml:"entry"`
-	Timestamp string   `xml:"timestamp,attr"`
-	Title     string   `xml:"title,attr"`
-	Content   string   `xml:",chardata"`
-}*/
-
-/*type entry struct {
-	XMLName   xml.Name `xml:"entry"`
-	Timestamp string   `xml:"timestamp,attr"`
-	Title     string   `xml:"title,attr"`
-	Content   string   `xml:",chardata"`
-}*/
-
 // Represents a <data> element
 type page struct {
 	XMLName  xml.Name   `xml:"page"`
@@ -35,27 +21,8 @@ type revision struct {
 	Text      string `xml:"text"`
 }
 
-/*type ns struct {
-	XMLName xml.Name `xml:"ns"`
-	Content string   `xml:",chardata"`
-}
-
-type title struct {
-	XMLName xml.Name `xml:"title"`
-	Content string   `xml:",chardata"`
-}
-
-type text struct {
-	XMLName xml.Name `xml:"text"`
-	Content string   `xml:",chardata"`
-}
-
-type timestamp struct {
-	XMLName xml.Name `xml:"timestamp"`
-	Content string   `xml:",chardata"`
-}*/
-
-//var filter, _ = regexp.Compile("^file:.*|^talk:.*|^special:.*|^wikipedia:.*|^wiktionary:.*|^user:.*|^user_talk:.*")
+// Counts of language tags
+var countLanguages = map[string]int{}
 
 func main() {
 	//xmlFile, err := os.Open("wiktionary-latin.xml")
@@ -106,6 +73,7 @@ func main() {
 				for _, idx := range loc {
 					substr := p.Revision[0].Text[idx[0]:idx[1]]
 					fmt.Println(substr)
+					countLanguages[p.Revision[0].Text[(idx[0]+2):(idx[1]-2)]]
 				}
 				//fmt.Print(e.Content[loc[0]:loc[1]])
 

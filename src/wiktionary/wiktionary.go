@@ -1,4 +1,4 @@
-package main
+package wiktionary
 
 import (
 	"encoding/xml"
@@ -7,40 +7,24 @@ import (
 	"regexp"
 )
 
-// Represents a <data> element
-type page struct {
-	XMLName  xml.Name   `xml:"page"`
-	Title    string     `xml:"title"`
-	Ns       int        `xml:"ns"`
-	Revision []revision `xml:"revision"`
-}
+// CountLevel2Headings counts number of unique second level headings in Wiktionary XML
+func CountLevel2Headings(filename string) {
+	// Counts of language tags
+	var countLanguages = map[string]int{}
 
-// Represents an <entry> element
-type revision struct {
-	Timestamp string `xml:"timestamp"`
-	Text      string `xml:"text"`
-}
-
-// Counts of language tags
-var countLanguages = map[string]int{}
-
-func main() {
-	//xmlFile, err := os.Open("wiktionary-latin.xml")
-	xmlFile, err := os.Open("enwiktionary-latest-pages-articles.xml")
+	// Open XML file and start decoder
+	xmlFile, err := os.Open(filename)
 	if err != nil {
 		fmt.Println("Error opening file:", err)
 		return
 	}
 	defer xmlFile.Close()
-
 	decoder := xml.NewDecoder(xmlFile)
-	r := regexp.MustCompile(`(?m)^={2}[^=]+?={2}`)
-	//idx := r.FindAllStringIndex("==abc==", -1)
-	//print(idx)
 
-	//total := 0
-	//var inElement string
-	//for {
+	// This regular expression looks for second level headings, e.g. "==English=="
+	r := regexp.MustCompile(`(?m)^={2}[^=]+?={2}`)
+
+	// TODO: Replace 1000 loops with an EOF cond
 	for i := 0; i < 1000; i++ {
 		// Read tokens from the XML document in a stream.
 		t, _ := decoder.Token()

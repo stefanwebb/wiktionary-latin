@@ -27,6 +27,7 @@ type revision struct {
 func CountLevel2Headings(filename string) (map[string]int, error) {
 	// Counts of language tags
 	var countLanguages = map[string]int{}
+	countPages := 0
 
 	// Open XML file and start decoder
 	xmlFile, err := os.Open(filename)
@@ -40,10 +41,14 @@ func CountLevel2Headings(filename string) (map[string]int, error) {
 	// This regular expression looks for second level headings, e.g. "==English=="
 	r := regexp.MustCompile(`(?m)^={2}[^=]+?={2}`)
 
-	// TODO: Replace 1000 loops with an EOF cond
-	for i := 0; i < 1000; i++ {
+	fmt.Println("Counting second level headings in Wiktionary XML")
+	start := time.Now()
+	for {
 		// Read tokens from the XML document in a stream.
 		t, _ := decoder.Token()
+		if err == io.EOF {
+			break
+		}
 
 		switch se := t.(type) {
 		case xml.StartElement:
@@ -71,12 +76,21 @@ func CountLevel2Headings(filename string) (map[string]int, error) {
 					//fmt.Println(substr)
 					countLanguages[p.Revision[0].Text[(idx[0]+2):(idx[1]-2)]]++
 				}
+
+				countPages++
+
+				if countPages%100000 == 0 {
+					fmt.Printf("%d pages...\n", countPages)
+				}
 			}
 
 		default:
 		}
 
 	}
+
+	elapsed := time.Since(start).Minutes()
+	fmt.Printf("Took %f minutes\n", elapsed)
 
 	return countLanguages, nil
 }
@@ -96,8 +110,6 @@ func CountPages(filename string) (int, error) {
 	decoder := xml.NewDecoder(xmlFile)
 
 	fmt.Println("Counting pages in Wiktionary XML")
-
-	// TODO: Replace 1000 loops with an EOF cond
 	start := time.Now()
 	for {
 		// Read tokens from the XML document in a stream.

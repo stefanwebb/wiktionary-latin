@@ -1,3 +1,5 @@
 /.vscode
 *.xml
 *.txt
+/pkg/windows_amd64/wiktionary.a
+/src/app/debug

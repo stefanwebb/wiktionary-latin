@@ -3,8 +3,10 @@ package wiktionary
 import (
 	"encoding/xml"
 	"fmt"
+	"io"
 	"os"
 	"regexp"
+	"time"
 )
 
 // Represents a <data> element
@@ -77,4 +79,59 @@ func CountLevel2Headings(filename string) (map[string]int, error) {
 	}
 
 	return countLanguages, nil
+}
+
+// CountPages counts number of pages in NS 0, i.e. word pages
+func CountPages(filename string) (int, error) {
+	// Counts of language tags
+	var countPages = 0
+
+	// Open XML file and start decoder
+	xmlFile, err := os.Open(filename)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return 0, nil
+	}
+	defer xmlFile.Close()
+	decoder := xml.NewDecoder(xmlFile)
+
+	fmt.Println("Counting pages in Wiktionary XML")
+
+	// TODO: Replace 1000 loops with an EOF cond
+	start := time.Now()
+	for {
+		// Read tokens from the XML document in a stream.
+		t, err := decoder.Token()
+		if err == io.EOF {
+			break
+		}
+
+		switch se := t.(type) {
+		case xml.StartElement:
+			if se.Name.Local == "page" {
+				t, _ = decoder.Token()
+				var p page
+				// decode a whole chunk of following XML into the
+				// variable p which is a Page (se above)
+				decoder.DecodeElement(&p, &se)
+				if p.Ns != 0 {
+					continue
+				}
+
+				countPages++
+
+				if countPages%100000 == 0 {
+					fmt.Printf("%d pages...\n", countPages)
+				}
+			}
+
+		default:
+		}
+
+	}
+
+	elapsed := time.Since(start).Minutes()
+	fmt.Printf("Took %f minutes\n", elapsed)
+
+	return countPages, nil
 }

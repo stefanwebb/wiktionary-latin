@@ -45,7 +45,7 @@ func CountLevel2Headings(filename string) (map[string]int, error) {
 	start := time.Now()
 	for {
 		// Read tokens from the XML document in a stream.
-		t, _ := decoder.Token()
+		t, err := decoder.Token()
 		if err == io.EOF {
 			break
 		}

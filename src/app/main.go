@@ -44,7 +44,7 @@ func main() {
 
 	w := bufio.NewWriter(f)
 	for _, k := range keys {
-		w.WriteString(fmt.Sprintf("%s, %d", k, langs[k]))
+		w.WriteString(fmt.Sprintf("%s, %d\n", k, langs[k]))
 		//fmt.Println(k, langs[k])
 	}
 	w.Flush()

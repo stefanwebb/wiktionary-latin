@@ -1,13 +1,9 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
-	"sort"
-	"wiktionary"
 )
 
 func check(e error) {
@@ -28,10 +24,10 @@ func main() {
 	//pages, _ := wiktionary.CountPages(filepath.Join(path, filename))
 	//fmt.Printf("\n%d pages in total\n", pages)
 
-	langs, _ := wiktionary.CountLevel2Headings(filepath.Join(path, filename))
-	//fmt.Println(langs)
+	//_ = wiktionary.FindLevel2HeadingsTypos(filepath.Join(path, filename))
 
 	// Sort keys, i.e. language headers, and save counts to file in sorted order
+	/*langs, _ := wiktionary.CountLevel2Headings(filepath.Join(path, filename))
 	keys := make([]string, 0, len(langs))
 	for k := range langs {
 		keys = append(keys, k)
@@ -47,5 +43,5 @@ func main() {
 		w.WriteString(fmt.Sprintf("%s, %d\n", k, langs[k]))
 		//fmt.Println(k, langs[k])
 	}
-	w.Flush()
+	w.Flush()*/
 }

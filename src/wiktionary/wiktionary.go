@@ -147,3 +147,85 @@ func CountPages(filename string) (int, error) {
 
 	return countPages, nil
 }
+
+// FindLevel2HeadingsTypos counts number of unique second level headings in Wiktionary XML
+func FindLevel2HeadingsTypos(filename string) error {
+	// Counts of language tags
+	countPages := 0
+
+	// Open XML file and start decoder
+	xmlFile, err := os.Open(filename)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return nil
+	}
+	defer xmlFile.Close()
+	decoder := xml.NewDecoder(xmlFile)
+
+	// This regular expression looks for second level headings, e.g. "==English=="
+	r := regexp.MustCompile(`(?m)^={2}[^=]+?={2}`)
+
+	fmt.Println("Counting second level headings in Wiktionary XML")
+	start := time.Now()
+	for {
+		// Read tokens from the XML document in a stream.
+		t, err := decoder.Token()
+		if err == io.EOF {
+			break
+		}
+
+		switch se := t.(type) {
+		case xml.StartElement:
+			//fmt.Println(se.Name.Local)
+			//fmt.Println(t)
+
+			//if se.Name.Local == "entry" {
+			if se.Name.Local == "page" {
+				t, _ = decoder.Token()
+				//for t.(type) != xml.StartElement
+
+				var p page
+				// decode a whole chunk of following XML into the
+				// variable p which is a Page (se above)
+				decoder.DecodeElement(&p, &se)
+				if p.Ns != 0 {
+					continue
+				}
+				//print(p.Revision[0].Text)
+
+				loc := r.FindAllStringIndex(p.Revision[0].Text, -1)
+				//print(loc)
+				for _, idx := range loc {
+
+					lang := p.Revision[0].Text[(idx[0] + 2):(idx[1] - 2)]
+					switch lang {
+					case "your mom lollol":
+						fmt.Printf("%s => %s\n", p.Title, lang)
+					case "West Frisian, Dutch, English and German":
+						fmt.Printf("%s => %s\n", p.Title, lang)
+					case "Mecayapan Nahautl":
+						fmt.Printf("%s => %s\n", p.Title, lang)
+					default:
+						if lang[0] == ' ' {
+							fmt.Printf("%s => %s\n", p.Title, lang)
+						}
+					}
+				}
+
+				countPages++
+
+				if countPages%100000 == 0 {
+					fmt.Printf("%d pages...\n", countPages)
+				}
+			}
+
+		default:
+		}
+
+	}
+
+	elapsed := time.Since(start).Minutes()
+	fmt.Printf("Took %f minutes\n", elapsed)
+
+	return nil
+}

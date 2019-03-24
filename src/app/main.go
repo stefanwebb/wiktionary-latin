@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"wiktionary"
 )
 
 func check(e error) {
@@ -20,7 +22,14 @@ func main() {
 	fmt.Println(dir)
 
 	path := "C:/Users/Stefan Webb/OneDrive - OnTheHub - The University of Oxford/Programming/Go/latin-wiktionary"
-	filename := "enwiktionary-latest-pages-articles.xml"
+	//inFilename := "enwiktionary-latest-pages-articles.xml"
+	outFilename := "enwiktionary-latin.xml"
+
+	//wiktionary.ExtractLatin(filepath.Join(path, inFilename), filepath.Join(path, outFilename))
+
+	headwordsFilename := "latin-headwords.txt"
+	wiktionary.SortLatinHeadwords(filepath.Join(path, outFilename), filepath.Join(path, headwordsFilename))
+
 	//pages, _ := wiktionary.CountPages(filepath.Join(path, filename))
 	//fmt.Printf("\n%d pages in total\n", pages)
 

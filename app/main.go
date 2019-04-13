@@ -2,10 +2,13 @@ package main
 
 import (
 	"fmt"
+	"go/build"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
-	"wiktionary"
+
+	"github.com/stefanwebb/wiktionary-latin/wiktionary"
 )
 
 func check(e error) {
@@ -21,14 +24,14 @@ func main() {
 	}
 	fmt.Println(dir)
 
-	path := "C:/Users/Stefan Webb/OneDrive - OnTheHub - The University of Oxford/Programming/Go/latin-wiktionary"
+	datapath := path.Join(build.Default.GOPATH, "/data")
 	//inFilename := "enwiktionary-latest-pages-articles.xml"
 	outFilename := "enwiktionary-latin.xml"
 
 	//wiktionary.ExtractLatin(filepath.Join(path, inFilename), filepath.Join(path, outFilename))
 
 	headwordsFilename := "latin-headwords.txt"
-	wiktionary.SortLatinHeadwords(filepath.Join(path, outFilename), filepath.Join(path, headwordsFilename))
+	wiktionary.SortLatinHeadwords(filepath.Join(datapath, outFilename), filepath.Join(datapath, headwordsFilename))
 
 	//pages, _ := wiktionary.CountPages(filepath.Join(path, filename))
 	//fmt.Printf("\n%d pages in total\n", pages)

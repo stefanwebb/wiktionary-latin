@@ -375,7 +375,7 @@ func SortLatinHeadwords(inputFilename string, outputFilename string) error {
 				// variable p which is a Page (se above)
 				decoder.DecodeElement(&l, &se)
 
-				headwords = append(headwords, l.Title)
+				headwords = append(headwords, strings.ToLower(l.Title))
 
 				if countPages%10000 == 0 {
 					fmt.Printf("%d pages...\n", countPages)
@@ -395,13 +395,19 @@ func SortLatinHeadwords(inputFilename string, outputFilename string) error {
 	fmt.Println("Saving to text file")
 	isValidWord := regexp.MustCompile(`^[a-zA-Z-.0-9 ]+$`).MatchString
 	w := bufio.NewWriter(outFile)
+	lastString := ""
 	for _, s := range headwords {
+		if s == lastString {
+			continue
+		}
+
 		if isValidWord(s) {
 			w.WriteString(s)
 			w.WriteString("\n")
 		} else {
 			fmt.Println(s)
 		}
+		lastString = s
 	}
 	w.Flush()
 
